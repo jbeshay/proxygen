@@ -1,11 +1,11 @@
 # Following instruction from https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
 
-name: Create and publish a Docker image
+name: Create and publish Mvfst Interop Image
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
   push:
-    branches: ['release']
+    branches: ['main']
 
 env:
   REGISTRY: ghcr.io
