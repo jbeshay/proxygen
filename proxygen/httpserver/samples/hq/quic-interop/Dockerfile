@@ -12,9 +12,8 @@ RUN apt-get update
 RUN apt-get --yes --fix-missing update
 
 # Get and build proxygen with HTTP/3 support
-RUN echo 'JBESHAY' && pwd && ls && cd proxygen
 RUN apt-get install --yes wget net-tools iputils-ping tcpdump ethtool iperf git sudo cmake python3 libssl-dev m4 zlib1g-dev gcc g++
-RUN cd proxygen && ./getdeps.sh --no-tests
+RUN proxygen/getdeps.sh --no-tests
 RUN ldd /tmp/fbcode_builder_getdeps-ZproxygenZbuildZfbcode_builder-root/build/proxygen/proxygen/httpserver/hq | grep "=> /" | awk '{print $3}' > libs.txt
 RUN tar cvf libs.tar --dereference --files-from=libs.txt
 
@@ -25,7 +24,6 @@ FROM martenseemann/quic-network-simulator-endpoint:latest
 # copy run script
 COPY proxygen/httpserver/samples/hq/quic-interop/run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
-RUN echo 'JBESHAY' && pwd && ls && cd proxygen
 
 # Copy HQ
 COPY --from=0 /tmp/fbcode_builder_getdeps-ZproxygenZbuildZfbcode_builder-root/build/proxygen/proxygen/httpserver/hq /proxygen/_build/proxygen/bin/hq
