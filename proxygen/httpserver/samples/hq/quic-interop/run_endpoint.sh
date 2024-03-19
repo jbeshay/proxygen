@@ -20,10 +20,10 @@ HTTPVERSION="0.9"
 
 CONN_FLOW_CONTROL="107374182"
 STREAM_FLOW_CONTROL="107374182"
-INVOCATIONS=$(echo ${REQUESTS} | tr " " "\n" | awk -F '/' '{ print "/" $4 }' | paste -sd',')
+INVOCATIONS=$(echo "${REQUESTS}" | tr " " "\n" | awk -F '/' '{ print "/" $4 }' | paste -sd',')
 EARLYDATA="false"
 PSK_FILE="" # in memory psk
-if [ ! -z "${TESTCASE}" ]; then
+if [ -n "${TESTCASE}" ]; then
     case "${TESTCASE}" in
         "handshake") ;;
         "multiconnect") ;;
@@ -38,11 +38,11 @@ if [ ! -z "${TESTCASE}" ]; then
             LOGLEVEL=1
         ;;
         "resumption")
-            INVOCATIONS=$(echo ${INVOCATIONS} | sed -e "s/,/ /")
+            INVOCATIONS=$(${INVOCATIONS//,/ })
             PSK_FILE="/psk"
         ;;
         "zerortt")
-            INVOCATIONS=$(echo ${INVOCATIONS} | sed -e "s/,/ /")
+            INVOCATIONS=$(${INVOCATIONS//,/ })
             PSK_FILE="/psk"
             EARLYDATA="true"
         ;;
@@ -61,9 +61,9 @@ if [ "${ROLE}" == "client" ]; then
     /wait-for-it.sh sim:57832 -s -t 10
     echo "Starting QUIC client..."
     if [ -n "${REQUESTS}" ]; then
-        REQS=($REQUESTS)
+        REQS=("${REQUESTS}")
         REQ=${REQS[0]}
-        SERVER=$(echo $REQ | cut -d'/' -f3 | cut -d':' -f1)
+        SERVER=$(echo "$REQ" | cut -d'/' -f3 | cut -d':' -f1)
 
         for INVOCATION in ${INVOCATIONS}; do
 
