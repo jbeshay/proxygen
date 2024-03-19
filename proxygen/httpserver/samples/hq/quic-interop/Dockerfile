@@ -25,7 +25,7 @@ FROM martenseemann/quic-network-simulator-endpoint:latest
 # copy run script
 COPY proxygen/httpserver/samples/hq/quic-interop/run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
-RUN RUN echo 'JBESHAY' && pwd && ls && cd proxygen
+RUN echo 'JBESHAY' && pwd && ls && cd proxygen
 
 # Copy HQ
 COPY --from=0 /tmp/fbcode_builder_getdeps-ZproxygenZbuildZfbcode_builder-root/build/proxygen/proxygen/httpserver/hq /proxygen/_build/proxygen/bin/hq
