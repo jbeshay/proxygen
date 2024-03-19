@@ -36,16 +36,16 @@ if [ ! -z "${TESTCASE}" ]; then
             ;;
         "throughput")
             LOGLEVEL=1
-	    ;;
+        ;;
         "resumption")
             INVOCATIONS=$(echo ${INVOCATIONS} | sed -e "s/,/ /")
             PSK_FILE="/psk"
-	    ;;
-	"zerortt")
+        ;;
+        "zerortt")
             INVOCATIONS=$(echo ${INVOCATIONS} | sed -e "s/,/ /")
             PSK_FILE="/psk"
-	    EARLYDATA="true"
-	    ;;
+            EARLYDATA="true"
+        ;;
         "http3")
             PROTOCOL="h3"
             HTTPVERSION="1.1"
@@ -60,7 +60,7 @@ if [ "${ROLE}" == "client" ]; then
     # Wait for the simulator to start up.
     /wait-for-it.sh sim:57832 -s -t 10
     echo "Starting QUIC client..."
-    if [ ! -z "${REQUESTS}" ]; then
+    if [ -n "${REQUESTS}" ]; then
         REQS=($REQUESTS)
         REQ=${REQS[0]}
         SERVER=$(echo $REQ | cut -d'/' -f3 | cut -d':' -f1)
@@ -70,7 +70,7 @@ if [ "${ROLE}" == "client" ]; then
           echo "requesting files '${INVOCATION}'"
           ${HQ_CLI} \
               --mode=client \
-              --host=${SERVER} \
+              --host="${SERVER}" \
               --port=${PORT} \
               --protocol=${PROTOCOL} \
               --httpversion=${HTTPVERSION} \
@@ -78,13 +78,14 @@ if [ "${ROLE}" == "client" ]; then
               --quic-version=${VERSION} \
               --path="${INVOCATION}" \
               --early_data=${EARLYDATA} \
+              --psk_file=${PSK_FILE} \
               --conn_flow_control=${CONN_FLOW_CONTROL} \
               --stream_flow_control=${STREAM_FLOW_CONTROL} \
               --outdir=/downloads \
               --logdir=/logs \
               --qlogger_path=/logs \
               --v=${LOGLEVEL} 2>&1 | tee /logs/client.log
-      done
+        done
         # This is the best way to troubleshoot.
         # Just uncomment the line below, run the test, then enter containers with
         # docker exec -it [client|server|sim] /bin/bash
@@ -95,14 +96,16 @@ elif [ "$ROLE" == "server" ]; then
     echo "Running QUIC server on [::]:${PORT}"
     ${HQ_CLI} \
         --mode=server \
-	--cert=/certs/cert.pem \
-	--key=/certs/priv.key \
+        --cert=/certs/cert.pem \
+        --key=/certs/priv.key \
+        --conn_flow_control=${CONN_FLOW_CONTROL} \
+        --stream_flow_control=${STREAM_FLOW_CONTROL} \
         --port=${PORT} \
-	--httpversion=${HTTPVERSION} \
+        --httpversion=${HTTPVERSION} \
         --h2port=${PORT} \
         --static_root=/www \
         --logdir=/logs \
-	--qlogger_path=/logs \
+        --qlogger_path=/logs \
         --host=:: \
         --congestion=bbr \
         --pacing=true \
