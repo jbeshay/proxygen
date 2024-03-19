@@ -22,7 +22,7 @@ RUN tar cvf libs.tar --dereference --files-from=libs.txt
 #
 FROM martenseemann/quic-network-simulator-endpoint:latest
 # copy run script
-COPY run_endpoint.sh .
+COPY proxygen/httpserver/samples/hq/quic-interop/run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
 
 # Copy HQ
